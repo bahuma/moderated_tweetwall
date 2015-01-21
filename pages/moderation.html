@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Admin - Moderated Tweet-Wall</title>
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <h1>Moderation</h1>
+        
+        <ul id="tweet-list"></ul>
+        
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+        <script>
+            var tweetList = [];
+            var socket = io();
+            
+            jQuery(document).keypress(function(e) {
+
+                switch (e.which) {
+                    case 117:
+                        approveTweet(jQuery('ul#tweet-list li:first').data("tweet-id"));
+                        break;
+                        
+                    case 105:
+                        rejectTweet(jQuery('ul#tweet-list li:first').data("tweet-id"));
+                        break;
+                }
+            });
+            
+            socket.on('new tweet', function(tweet) {
+                tweetList[tweet.id] = tweet;
+                $('ul#tweet-list').append(buildTweetItem(tweet.id));
+            });
+            
+            var buildTweetItem = function(tweetID) {
+                var contents;
+                
+                contents  = '<li data-tweet-id="'+ tweetList[tweetID].id +'" class="tweet">';
+                contents += '<img src="'+ tweetList[tweetID].user.profile_image_url_https +'" class="user-image">';
+                contents += '<div class="name"><span class="display-name">' + tweetList[tweetID].user.name + '</span><span class="user-name">' + tweetList[tweetID].user.screen_name + '</span></div>';
+                contents += '<div class="content">' + tweetList[tweetID].text + '</div>';
+                contents += '<button class="approve-button" onclick="approveTweet(\'' + tweetList[tweetID].id + '\')">Approve</button>';
+                contents += '<button class="reject-button" onclick="rejectTweet(\'' + tweetList[tweetID].id + '\')">Reject</button>';
+                contents += '</li>';
+                
+                return contents;
+            }
+            
+            var approveTweet = function(tweetID) {
+                socket.emit('approve tweet', tweetList[tweetID]);
+                delete tweetList[tweetID];
+                jQuery('ul#tweet-list li[data-tweet-id="' + tweetID + '"').remove();
+            }
+            
+            var rejectTweet = function(tweetID) {
+                delete tweetList[tweetID];
+                jQuery('ul#tweet-list li[data-tweet-id="' + tweetID + '"').remove();
+            }
+            
+            jQuery(document).ready(function($) {
+                $(".approve-button").on('click', function(e) {
+                    console.log("yolo");
+                    var tid = $(this).parent("li").data("tweet-id");
+                    console.log(tid);
+                });
+            });
+        </script>
+    </body>
+</html>

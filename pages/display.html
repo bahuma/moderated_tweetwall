@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Moderated Tweet-Wall</title>
+        <meta charset="utf-8">
+        <style>
+            .tweet-slot {
+                position: relative;
+                width: 50%;
+                float: left;
+                height: 200px;
+            }
+            .tweet-slot .tweet {
+                position: absolute;
+                top: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Moderated Tweet-Wall</h1>
+        
+        <div class="tweet-slot" data-tweet-slot-id="2"></div>
+        <div class="tweet-slot" data-tweet-slot-id="4"></div>
+        <div class="tweet-slot" data-tweet-slot-id="3"></div>
+        <div class="tweet-slot" data-tweet-slot-id="1"></div>
+        
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+        <script>
+            var socket = io();
+            var tweetList = [];
+            var nextTweetSlot = 1;
+            var maxTweetSlots = 4;
+            
+            
+            socket.on('display tweet', function(tweet) {
+                console.log(tweet);
+                
+                tweetList[nextTweetSlot] = tweet;
+                
+                var tweetHTML = buildTweetItem(nextTweetSlot);
+                
+                jQuery('.tweet-slot[data-tweet-slot-id="' + nextTweetSlot + '"]').append(tweetHTML);
+                jQuery('.tweet-slot[data-tweet-slot-id="' + nextTweetSlot + '"] .tweet').not('.new').fadeOut('slow');
+                jQuery('.tweet-slot[data-tweet-slot-id="' + nextTweetSlot + '"] .tweet.new').fadeIn('slow', function(){
+                    jQuery(this).removeClass('new');
+                });
+                
+                
+                if (nextTweetSlot == maxTweetSlots)
+                    nextTweetSlot = 1;
+                else
+                    nextTweetSlot = nextTweetSlot + 1;
+                
+                
+            });
+            
+            var buildTweetItem = function(tweetSlot) {
+                var contents = "";
+                 
+                contents  = '<div data-tweet-slot="'+ tweetList[tweetSlot] +'" class="tweet new" style="display:none">';
+                contents += '<img src="'+ tweetList[tweetSlot].user.profile_image_url_https +'" class="user-image">';
+                contents += '<div class="name"><span class="display-name">' + tweetList[tweetSlot].user.name + '</span><span class="user-name">' + tweetList[tweetSlot].user.screen_name + '</span></div>';
+                contents += '<div class="content">' + tweetList[tweetSlot].text + '</div>';
+                contents += '</div>';
+                
+                return contents;
+            }
+        </script>
+    </body>
+</html>

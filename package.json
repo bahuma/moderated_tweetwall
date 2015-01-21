@@ -1,0 +1,24 @@
+{
+  "name": "moderated_tweetwall",
+  "version": "0.0.0",
+  "description": "Show Tweets for a specific hashtag in realtime but first approve them",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bahuma/moderated_tweetwall.git"
+  },
+  "author": "Bahuma (http://bahuma.me)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bahuma/moderated_tweetwall/issues"
+  },
+  "homepage": "https://github.com/bahuma/moderated_tweetwall",
+  "dependencies": {
+    "express": "^4.10.2",
+    "socket.io": "^1.3.2",
+    "twitter": "^1.0.3"
+  }
+}
